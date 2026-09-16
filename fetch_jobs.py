@@ -2,23 +2,25 @@ import os
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()  # wczytuje klucze z pliku .env
+load_dotenv()
 
-APP_ID = os.getenv("ADZUNA_APP_ID")
-APP_KEY = os.getenv("ADZUNA_APP_KEY")
+def get_jobs(what="python", where="Rzeszów", limit=20):
+    app_id = os.getenv("ADZUNA_APP_ID")
+    app_key = os.getenv("ADZUNA_APP_KEY")
 
-url = "https://api.adzuna.com/v1/api/jobs/pl/search/1"
-params = {
-    "app_id": APP_ID,
-    "app_key": APP_KEY,
-    "results_per_page": 10,
-    "what": "python",
-    "where": "Rzeszów",
-    "content-type": "application/json",
-}
+    url = "https://api.adzuna.com/v1/api/jobs/pl/search/1"
+    params = {
+        "app_id": app_id,
+        "app_key": app_key,
+        "results_per_page": limit,
+        "what": what,
+        "where": where,
+        "content-type": "application/json",
+    }
+    response = requests.get(url, params=params)
+    return response.json()["results"]
 
-response = requests.get(url, params=params)
-data = response.json()
-
-for job in data["results"]:
-    print(job["title"], "-", job["company"]["display_name"])
+if __name__ == "__main__":
+    jobs = get_jobs()
+    for job in jobs:
+        print(job["title"], "-", job["company"]["display_name"])
