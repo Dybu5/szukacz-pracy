@@ -47,7 +47,7 @@ def evaluate_jobs(jobs):
     api_key = os.getenv("ANTHROPIC_API_KEY")
 
     jobs_short = [
-        {"id": i, "title": j["title"], "company": j["company"]["display_name"],
+        {"id": i, "title": j["title"], "company": j.get("company", {}).get("display_name", "?"),
          "description": j.get("description", "")[:300]}
         for i, j in enumerate(jobs)
     ]
@@ -105,6 +105,6 @@ if __name__ == "__main__":
     for ocena in oceny:
         if ocena["pasuje"]:
             job = jobs[ocena["id"]]
-            print(f"\n✅ {job['title']} - {job['company']['display_name']}")
+            print(f"\n✅ {job['title']} - {job.get('company', {}).get('display_name', '?')}")
             print(f"   Powód: {ocena['powod']}")
             print(f"   Link: {job['redirect_url']}")
