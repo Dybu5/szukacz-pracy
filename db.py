@@ -20,9 +20,21 @@ def init_db():
             powod TEXT,
             link TEXT UNIQUE,
             data_znalezienia TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            ulubione INTEGER DEFAULT 0
+            ulubione INTEGER DEFAULT 0,
+            source TEXT DEFAULT 'adzuna',
+            kategoria TEXT DEFAULT 'pokrewna'
         )
     """)
+    # Migracja dla baz zapisanych przed dodaniem kolumn source/kategoria -
+    # CREATE TABLE IF NOT EXISTS nie doda kolumny do istniejącej tabeli.
+    try:
+        conn.execute("ALTER TABLE oferty ADD COLUMN source TEXT DEFAULT 'adzuna'")
+    except sqlite3.OperationalError:
+        pass  # kolumna już istnieje
+    try:
+        conn.execute("ALTER TABLE oferty ADD COLUMN kategoria TEXT DEFAULT 'pokrewna'")
+    except sqlite3.OperationalError:
+        pass  # kolumna już istnieje
     conn.commit()
     conn.close()
 
@@ -31,8 +43,11 @@ def save_jobs(lista_ofert):
     conn = get_connection()
     conn.executemany(
         """
-        INSERT OR IGNORE INTO oferty (title, company, powod, link)
-        VALUES (:title, :company, :powod, :link)
+        INSERT INTO oferty (title, company, powod, link, source, kategoria)
+        VALUES (:title, :company, :powod, :link, :source, :kategoria)
+        ON CONFLICT(link) DO UPDATE SET
+            kategoria = excluded.kategoria,
+            powod = excluded.powod
         """,
         lista_ofert,
     )

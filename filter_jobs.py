@@ -59,8 +59,22 @@ Oto lista ofert pracy (JSON):
 {json.dumps(jobs_short, ensure_ascii=False)}
 
 Dla każdej oferty oceń czy pasuje do profilu (staż/junior, zgodna z zainteresowaniami).
+Oceń też kategorię oferty - to rozstrzygnięcie binarne, wybierz "informatyka" ZAWSZE gdy
+stanowisko choćby częściowo dotyczy któregokolwiek z: programowania (dowolny język),
+sieci komputerowych/telekomunikacyjnych, infrastruktury IT, DevOps, chmury, cyberbezpieczeństwa,
+wsparcia IT/helpdesk, analizy danych, systemów informatycznych, testowania oprogramowania.
+Przykłady które MUSZĄ dostać "informatyka": "Inżynier ds. Sieci Szkieletowej", "IT Support
+Specialist", "Technology Risk Intern", "Junior AML Analyst" (jeśli opis wspomina systemy/dane),
+"Cybersecurity Intern", "Data Engineer".
+
+Wybierz "pokrewna" TYLKO gdy stanowisko jest czysto mechaniczne/elektryczne/produkcyjne bez
+JAKIEGOKOLWIEK elementu IT/sieci/oprogramowania - np. "Inżynier Serwisu" (naprawa sprzętu
+fizycznego bez software'u), "Technik wózków widłowych", czysto produkcyjne stanowiska.
+
+W razie wątpliwości między "informatyka" a "pokrewna" - wybierz "informatyka".
+
 Zwróć WYŁĄCZNIE JSON (bez żadnego innego tekstu) w formacie:
-[{{"id": 0, "pasuje": true, "powod": "krótkie uzasadnienie po polsku"}}, ...]
+[{{"id": 0, "pasuje": true, "powod": "krótkie uzasadnienie po polsku", "kategoria": "informatyka"}}, ...]
 """
 
     response = requests.post(

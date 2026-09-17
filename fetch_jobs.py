@@ -33,7 +33,10 @@ def get_jobs(
     if max_days_old is not None:
         params["max_days_old"] = max_days_old
     response = requests.get(url, params=params)
-    return response.json()["results"]
+    results = response.json()["results"]
+    for job in results:
+        job["source"] = "adzuna"
+    return results
 
 if __name__ == "__main__":
     jobs = get_jobs()
