@@ -12,7 +12,7 @@ search can be run and browsed without a computer.
 - Pulls job listings from two sources: Adzuna and Jooble
 - Evaluates and categorizes each listing with AI ("informatyka" / "pokrewna" - IT vs.
   related technical fields), matched against a candidate profile
-- SQLite database with search history, so nothing gets lost between runs
+- PostgreSQL database (hosted on Neon) with search history, so nothing gets lost between runs
 - Favorites (star a listing), sorting (date/company/title), and text search
 - Installable as a PWA (manifest, dark mobile-first UI)
 - Reachable remotely over Tailscale, not just on localhost
@@ -20,7 +20,7 @@ search can be run and browsed without a computer.
 ## Tech stack
 
 - Python, Flask
-- SQLite
+- PostgreSQL (Neon), psycopg2
 - Claude API (Anthropic) - evaluation and categorization of listings
 - Adzuna API, Jooble API - job sources
 - HTML/CSS/vanilla JS (no frontend framework)
@@ -46,7 +46,11 @@ ANTHROPIC_API_KEY=
 JOOBLE_API_KEY=
 EMAIL_ADDRESS=
 EMAIL_APP_PASSWORD=
+DATABASE_URL=
 ```
+
+`DATABASE_URL` is a PostgreSQL connection string (for Neon, the pooled one with
+`-pooler` in the host name).
 
 Then start the server:
 

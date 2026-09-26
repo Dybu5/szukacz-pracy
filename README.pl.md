@@ -12,7 +12,7 @@ wyników działa bez komputera.
 - Pobieranie ofert z dwóch źródeł: Adzuna i Jooble
 - Ocena i kategoryzacja ofert przez AI ("informatyka" / "pokrewna"), dopasowana do
   profilu kandydata
-- Baza danych SQLite z historią wyszukiwań, więc nic nie ginie między przebiegami
+- Baza danych PostgreSQL (hostowana na Neon) z historią wyszukiwań, więc nic nie ginie między przebiegami
 - Ulubione (gwiazdka na ofercie), sortowanie (data/firma/tytuł) i wyszukiwanie tekstowe
 - Instalowalna jako PWA (manifest, ciemny interfejs mobile-first)
 - Dostęp zdalny przez Tailscale, nie tylko lokalnie
@@ -20,7 +20,7 @@ wyników działa bez komputera.
 ## Stack technologiczny
 
 - Python, Flask
-- SQLite
+- PostgreSQL (Neon), psycopg2
 - Claude API (Anthropic) - ocena i kategoryzacja ofert
 - Adzuna API, Jooble API - źródła ofert
 - HTML/CSS/vanilla JS (bez frameworka frontendowego)
@@ -46,7 +46,11 @@ ANTHROPIC_API_KEY=
 JOOBLE_API_KEY=
 EMAIL_ADDRESS=
 EMAIL_APP_PASSWORD=
+DATABASE_URL=
 ```
+
+`DATABASE_URL` to connection string do PostgreSQL (w Neon ten z poolerem, czyli z
+`-pooler` w nazwie hosta).
 
 Następnie odpal serwer:
 
