@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>Szukacz Pracy</title>
+</head>
+<body>
+<div class="kontener">
+
+    <div class="pasek-gorny">
+        <h1>Szukacz Pracy</h1>
+        <button id="szukaj-btn">Szukaj</button>
+    </div>
+
+    <p id="status" hidden></p>
+
+    <div class="zakladki">
+        <button class="zakladka aktywna" data-tab="wszystkie">Wszystkie</button>
+        <button class="zakladka" data-tab="ulubione">Ulubione</button>
+        <button class="zakladka" data-tab="szukaj">Szukaj</button>
+    </div>
+
+    <div id="pole-szukaj" hidden>
+        <input id="pole-szukaj-input" type="text" placeholder="Szukaj po tytule lub firmie...">
+    </div>
+
+    <div class="sortowanie">
+        <button class="chip aktywna" data-sort="data_znalezienia">Data</button>
+        <button class="chip" data-sort="company">Firma</button>
+        <button class="chip" data-sort="title">Tytuł</button>
+    </div>
+
+    <div class="sortowanie">
+        <button class="chip zrodlo-chip aktywna" data-source="wszystkie">Wszystkie źródła</button>
+        <button class="chip zrodlo-chip" data-source="adzuna">Adzuna</button>
+        <button class="chip zrodlo-chip" data-source="jooble">Jooble</button>
+    </div>
+
+    <div class="sortowanie">
+        <button class="chip kategoria-chip aktywna" data-kategoria="wszystkie">Wszystkie</button>
+        <button class="chip kategoria-chip" data-kategoria="informatyka">Informatyka</button>
+        <button class="chip kategoria-chip" data-kategoria="pokrewna">Pokrewne</button>
+    </div>
+
+    <div id="lista"></div>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

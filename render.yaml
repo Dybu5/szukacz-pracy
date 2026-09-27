@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: szukacz-pracy
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: ADZUNA_APP_ID
+        sync: false
+      - key: ADZUNA_APP_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: JOOBLE_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false

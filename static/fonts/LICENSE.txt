@@ -1,0 +1,8 @@
+Roboto-Regular.ttf and Roboto-Bold.ttf
+
+Font: Roboto, by Google
+License: Apache License, Version 2.0
+Full license text: https://www.apache.org/licenses/LICENSE-2.0
+Source: https://github.com/openmaptiles/fonts (mirror of Google's Roboto release)
+
+Unmodified font files, redistributed under the terms of the Apache License 2.0.

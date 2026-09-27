@@ -1,0 +1,39 @@
+{
+  "dane_osobowe": {
+    "imie": "",
+    "nazwisko": "",
+    "telefon": "",
+    "email": "",
+    "lokalizacja": ""
+  },
+  "podsumowanie_bazowe": "",
+  "umiejetnosci": [
+    {"nazwa": "", "kategoria": "programowanie"},
+    {"nazwa": "", "kategoria": "narzędzia"},
+    {"nazwa": "", "kategoria": "język"}
+  ],
+  "edukacja": [
+    {
+      "uczelnia": "",
+      "kierunek": "",
+      "status": ""
+    }
+  ],
+  "doswiadczenie": [
+    {
+      "stanowisko": "",
+      "firma": "",
+      "daty": "",
+      "opis": "",
+      "osiagniecia": ""
+    }
+  ],
+  "projekty": [
+    {
+      "nazwa": "",
+      "opis": "",
+      "technologie": [],
+      "osiagniecia": ""
+    }
+  ]
+}

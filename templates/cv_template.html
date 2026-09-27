@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: "Roboto"; src: url("file:///{{ fonts_dir }}/Roboto-Regular.ttf"); }
+@font-face { font-family: "Roboto"; src: url("file:///{{ fonts_dir }}/Roboto-Bold.ttf"); font-weight: bold; }
+
+body {
+    font-family: "Roboto";
+    font-size: 11px;
+    color: #111111;
+    margin: 2cm 2.2cm;
+}
+h1 {
+    font-size: 20px;
+    margin: 0 0 4px 0;
+}
+.kontakt {
+    font-size: 11px;
+    color: #333333;
+    margin-bottom: 14px;
+}
+h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #999999;
+    padding-bottom: 3px;
+    margin: 16px 0 8px 0;
+}
+p {
+    margin: 0 0 8px 0;
+    line-height: 1.45;
+}
+ul {
+    margin: 0 0 8px 0;
+    padding-left: 18px;
+}
+li {
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+.pozycja-naglowek {
+    font-weight: bold;
+    margin: 0 0 2px 0;
+}
+.pozycja-daty {
+    color: #555555;
+    font-style: italic;
+    margin: 0 0 2px 0;
+}
+.pozycja-opis {
+    margin: 0 0 12px 0;
+}
+</style>
+</head>
+<body>
+
+<h1>{{ profil.dane_osobowe.imie }} {{ profil.dane_osobowe.nazwisko }}</h1>
+<div class="kontakt">
+    {{ profil.dane_osobowe.lokalizacja }} | Tel: {{ profil.dane_osobowe.telefon }} | E-mail: {{ profil.dane_osobowe.email }}
+</div>
+
+<h2>Podsumowanie zawodowe</h2>
+<p>{{ dopasowanie.podsumowanie }}</p>
+
+<h2>Umiejętności</h2>
+<ul>
+{% for umiejetnosc in dopasowanie.umiejetnosci_uporzadkowane %}
+    <li>{{ umiejetnosc }}</li>
+{% endfor %}
+</ul>
+
+<h2>Doświadczenie</h2>
+{% if dopasowanie.wybrane_osiagniecia %}
+<ul>
+{% for osiagniecie in dopasowanie.wybrane_osiagniecia %}
+    <li>{{ osiagniecie }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% for pozycja in profil.doswiadczenie %}
+<p class="pozycja-naglowek">{{ pozycja.stanowisko }} - {{ pozycja.firma }}</p>
+{% if pozycja.daty %}<p class="pozycja-daty">{{ pozycja.daty }}</p>{% endif %}
+<p class="pozycja-opis">{{ pozycja.opis }}</p>
+{% endfor %}
+
+<h2>Edukacja</h2>
+{% for pozycja in profil.edukacja %}
+<p class="pozycja-naglowek">{{ pozycja.uczelnia }}{% if pozycja.kierunek %} - {{ pozycja.kierunek }}{% endif %}</p>
+{% if pozycja.status %}<p class="pozycja-opis">{{ pozycja.status }}</p>{% endif %}
+{% endfor %}
+
+<h2>Projekty</h2>
+{% for pozycja in profil.projekty %}
+<p class="pozycja-naglowek">{{ pozycja.nazwa }}</p>
+<p class="pozycja-opis">{{ pozycja.opis }}</p>
+{% if pozycja.technologie %}<p class="pozycja-opis"><i>Technologie: {{ pozycja.technologie | join(", ") }}</i></p>{% endif %}
+{% endfor %}
+
+</body>
+</html>
