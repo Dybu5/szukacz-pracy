@@ -67,6 +67,11 @@ INDEX_HTML = """<!doctype html>
     #szukaj-btn:disabled {
         opacity: 0.6;
     }
+    #status {
+        margin: -8px 0 16px 0;
+        font-size: 13px;
+        color: #fca5a5;
+    }
     .zakladki {
         display: flex;
         background: var(--card);
@@ -125,7 +130,6 @@ INDEX_HTML = """<!doctype html>
         margin-top: 20px;
     }
     .karta {
-        position: relative;
         background: var(--card);
         border-radius: 24px;
         padding: 20px;
@@ -224,6 +228,8 @@ INDEX_HTML = """<!doctype html>
         <button id="szukaj-btn">Szukaj</button>
     </div>
 
+    <p id="status" hidden></p>
+
     <div class="zakladki">
         <button class="zakladka aktywna" data-tab="wszystkie">Wszystkie</button>
         <button class="zakladka" data-tab="ulubione">Ulubione</button>
@@ -276,9 +282,22 @@ function zastosujFiltry(oferty) {
 }
 
 function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str ?? "";
-    return div.innerHTML;
+    return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+// Linki pochodzą z zewnętrznych API - przepuszczamy tylko http(s),
+// żeby ogłoszenie nie mogło podsunąć np. "javascript:...".
+function bezpiecznyLink(url) {
+    try {
+        const u = new URL(url);
+        if (u.protocol === "http:" || u.protocol === "https:") return escapeHtml(u.href);
+    } catch (err) {}
+    return "#";
 }
 
 function formatData(iso) {
@@ -330,7 +349,7 @@ function kartaHtml(oferta) {
         <p class="powod">${escapeHtml(oferta.powod)}</p>
         <div class="stopka">
             <span class="data">${formatData(oferta.data_znalezienia)}</span>
-            <a href="${oferta.link}" target="_blank" rel="noopener">Zobacz ofertę →</a>
+            <a href="${bezpiecznyLink(oferta.link)}" target="_blank" rel="noopener noreferrer">Zobacz ofertę →</a>
         </div>
     </div>`;
 }
@@ -424,13 +443,20 @@ document.getElementById("pole-szukaj-input").addEventListener("input", (e) => {
 
 document.getElementById("szukaj-btn").addEventListener("click", async () => {
     const btn = document.getElementById("szukaj-btn");
+    const status = document.getElementById("status");
     const oryginalnyTekst = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Szukam...";
+    status.hidden = true;
     try {
-        await fetch("/api/report");
+        const resp = await fetch("/api/report", { method: "POST" });
+        if (!resp.ok) {
+            const dane = await resp.json().catch(() => ({}));
+            throw new Error(dane.error || `HTTP ${resp.status}`);
+        }
     } catch (err) {
-        // ignorujemy - i tak odświeżamy archiwum poniżej
+        status.textContent = "Wyszukiwanie nie powiodło się: " + err.message;
+        status.hidden = false;
     } finally {
         btn.disabled = false;
         btn.textContent = oryginalnyTekst;
@@ -452,36 +478,44 @@ def index():
 
 @app.route("/manifest.json")
 def manifest():
-    return send_from_directory("static", "manifest.json")
+    return send_from_directory(app.static_folder, "manifest.json")
 
 
-@app.route("/static/<path:filename>")
-def static_files(filename):
-    return send_from_directory("static", filename)
-
-
-@app.route("/api/report")
+@app.route("/api/report", methods=["POST"])
 def api_report():
-    if get_last_search_time() is None:
-        jobs = get_jobs()
-    else:
-        jobs = get_jobs(max_days_old=1)
+    jobs = []
+    try:
+        if get_last_search_time() is None:
+            jobs += get_jobs()
+        else:
+            jobs += get_jobs(max_days_old=1)
+    except Exception as e:
+        print(f"OSTRZEŻENIE: Adzuna nie odpowiedziała poprawnie: {e}")
 
     try:
         jobs += get_jobs_jooble()
     except Exception as e:
         print(f"OSTRZEŻENIE: Jooble nie odpowiedziało poprawnie: {e}")
 
-    oceny = evaluate_jobs(jobs)
+    if not jobs:
+        return jsonify({"error": "Żadne źródło ofert nie odpowiedziało"}), 502
+
+    try:
+        oceny = evaluate_jobs(jobs)
+    except Exception as e:
+        print(f"BŁĄD: ocena ofert przez Claude API nie powiodła się: {e}")
+        return jsonify({"error": "Ocena ofert przez AI nie powiodła się"}), 502
 
     wyniki = []
     for ocena in oceny:
-        if ocena["pasuje"]:
-            job = jobs[ocena["id"]]
+        # Model może zwrócić id spoza zakresu - pomijamy takie wpisy zamiast wywalać endpoint.
+        idx = ocena.get("id")
+        if ocena.get("pasuje") and isinstance(idx, int) and 0 <= idx < len(jobs):
+            job = jobs[idx]
             wyniki.append({
                 "title": job["title"],
                 "company": job.get("company", {}).get("display_name", "?"),
-                "powod": ocena["powod"],
+                "powod": ocena.get("powod", ""),
                 "link": job["redirect_url"],
                 "source": job.get("source", "adzuna"),
                 "kategoria": ocena.get("kategoria", "pokrewna"),

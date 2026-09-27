@@ -1,0 +1,19 @@
+
+[Kim jesteś, kierunek/uczelnia lub aktualna sytuacja zawodowa]
+Czego szukasz: stażu / pracy / obu (dostępność - cały rok czy tylko wakacje).
+
+Zainteresowania zawodowe (w kolejności otwartości, nie sztywnych priorytetów):
+- [np. backend, frontend, embedded, sieci/IT infra, DevOps, AI/ML...]
+
+Umiejętności:
+- [języki programowania, narzędzia, poziom zaawansowania każdego]
+
+Doświadczenie zawodowe:
+- [poprzednie prace/praktyki, czego dotyczyły, czym mogą być atutem]
+
+Preferencje:
+- Lokalizacja: [miasto / zdalnie]
+- Wielkość i branża firmy: [ma znaczenie? jakie]
+- Płatność: [wymagana / mile widziana / bez znaczenia]
+- Poziom: [junior/staż/entry-level - unikaj ofert seniorskich]
+- Czego NIE brać pod uwagę (dealbreakery)

@@ -1,47 +1,22 @@
 import os
-import sys
 import json
 import re
 import requests
 from dotenv import load_dotenv
-from fetch_jobs import get_jobs
-
-sys.stdout.reconfigure(encoding="utf-8")
 
 load_dotenv()
 
-PROFIL = """
-Student I roku Mechatroniki (Politechnika Rzeszowska), szuka stażu LUB pracy (obie opcje).
-Dostępność: cały rok, równolegle ze studiami (nie tylko wakacje).
+PROFIL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "profil_kandydata.txt")
 
-Zainteresowania zawodowe (w kolejności otwartości, nie sztywnych priorytetów):
-- Programowanie: backend, frontend, embedded
-- Sieci / IT infrastruktura / DevOps
-- Otwarty na role związane z AI w różnej formie (ML/dane, albo AI jako narzędzie w automatyzacji/DevOps) -
-  nie ma jeszcze sprecyzowanej preferencji, chce zobaczyć różne opcje w tym obszarze
-
-Umiejętności:
-- Python (podstawy), C++ (Advanced Beginner)
-- Git/GitHub (początkujący, pierwszy własny projekt)
-- Docker (podstawy, z własnego projektu)
-- AutoCAD (grafika inżynierska)
-- Linux: brak doświadczenia, dopiero zaczyna
-- Angielski: komunikatywny (rozmowa techniczna, mail)
-
-Doświadczenie zawodowe:
-- 3 miesiące jako elektromechanik/automatyk w Thoni Alutec - serwis i naprawa maszyn CNC.
-  To dobry atut przy ofertach łączących IT z automatyką przemysłową/produkcją/IoT.
-
-Preferencje:
-- Lokalizacja: Rzeszów lub zdalnie
-- Wielkość i branża firmy: bez znaczenia
-- Płatność: mile widziana, ale nie kluczowa (nie odrzucaj bezpłatnych staży)
-- Poziom: szuka stanowisk juniorskich/stażowych/entry-level, NIE seniorskich ani wymagających
-  wieloletniego doświadczenia
-- Brak dealbreakerów co do branży - najważniejsze żeby stanowisko dawało uczyć się realnie
-  ciekawych, wartościowych rzeczy technicznych (nie czysty helpdesk/sprzedaż/call center bez
-  strony technicznej)
-"""
+try:
+    with open(PROFIL_PATH, encoding="utf-8") as f:
+        PROFIL = f.read()
+except FileNotFoundError:
+    raise RuntimeError(
+        f"Brak pliku {PROFIL_PATH}. Skopiuj profil_kandydata.example.txt do "
+        "profil_kandydata.txt i uzupełnij własnymi danymi (ten plik nie jest w repo - "
+        "zawiera prywatne informacje o kandydacie)."
+    ) from None
 
 def evaluate_jobs(jobs):
     api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -90,35 +65,21 @@ Zwróć WYŁĄCZNIE JSON (bez żadnego innego tekstu) w formacie:
             "thinking": {"type": "disabled"},
             "messages": [{"role": "user", "content": prompt}],
         },
+        timeout=120,
     )
     data = response.json()
     if "content" not in data:
-        print("BŁĄD Z API:")
-        print(data)
-        raise SystemExit(1)
+        raise RuntimeError(f"Claude API: {data.get('error', data)}")
     result_text = None
     for block in data["content"]:
         if block["type"] == "text":
             result_text = block["text"]
             break
     if result_text is None:
-        print("BRAK BLOKU TEKSTOWEGO:")
-        print(data["content"])
-        raise SystemExit(1)
+        raise RuntimeError(f"Claude API: brak bloku tekstowego (stop_reason={data.get('stop_reason')})")
     # Model czasem owija odpowiedź w markdown code fence (```json ... ```) -
     # zdejmujemy ją przed parsowaniem JSON-a.
     result_text = result_text.strip()
     result_text = re.sub(r"^```(?:json)?\s*", "", result_text)
     result_text = re.sub(r"\s*```$", "", result_text)
     return json.loads(result_text)
-
-if __name__ == "__main__":
-    jobs = get_jobs()
-    oceny = evaluate_jobs(jobs)
-
-    for ocena in oceny:
-        if ocena["pasuje"]:
-            job = jobs[ocena["id"]]
-            print(f"\n✅ {job['title']} - {job.get('company', {}).get('display_name', '?')}")
-            print(f"   Powód: {ocena['powod']}")
-            print(f"   Link: {job['redirect_url']}")

@@ -44,13 +44,15 @@ ADZUNA_APP_ID=
 ADZUNA_APP_KEY=
 ANTHROPIC_API_KEY=
 JOOBLE_API_KEY=
-EMAIL_ADDRESS=
-EMAIL_APP_PASSWORD=
 DATABASE_URL=
 ```
 
 `DATABASE_URL` is a PostgreSQL connection string (for Neon, the pooled one with
 `-pooler` in the host name).
+
+Copy `profil_kandydata.example.txt` to `profil_kandydata.txt` and fill it in with your
+own background/skills/preferences - this is what the AI matches listings against, and
+it's gitignored since it's personal information.
 
 Then start the server:
 

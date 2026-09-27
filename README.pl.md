@@ -44,13 +44,15 @@ ADZUNA_APP_ID=
 ADZUNA_APP_KEY=
 ANTHROPIC_API_KEY=
 JOOBLE_API_KEY=
-EMAIL_ADDRESS=
-EMAIL_APP_PASSWORD=
 DATABASE_URL=
 ```
 
 `DATABASE_URL` to connection string do PostgreSQL (w Neon ten z poolerem, czyli z
 `-pooler` w nazwie hosta).
+
+Skopiuj `profil_kandydata.example.txt` do `profil_kandydata.txt` i uzupełnij własnym
+doświadczeniem/umiejętnościami/preferencjami - to z tym AI porównuje oferty, a plik jest
+w `.gitignore`, bo zawiera dane osobowe.
 
 Następnie odpal serwer:
 
